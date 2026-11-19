@@ -1,0 +1,58 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/clipdeck.db
+      - REDIS_URL=redis://redis:6379/0
+      - CLIPDECK_MASTER_KEY=${CLIPDECK_MASTER_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - MEDIA_PATH=/data/media
+      - CORS_ORIGINS=http://localhost:3000,http://web:3000
+    volumes:
+      - clipdeck-data:/data
+      - clipdeck-media:/data/media
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build: ./worker
+    environment:
+      - DATABASE_URL=sqlite:///./data/clipdeck.db
+      - REDIS_URL=redis://redis:6379/0
+      - CLIPDECK_MASTER_KEY=${CLIPDECK_MASTER_KEY}
+      - MEDIA_PATH=/data/media
+      - MAX_CONCURRENT_STREAMS=4
+    volumes:
+      - clipdeck-data:/data
+      - clipdeck-media:/data/media
+    depends_on:
+      - redis
+      - api
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+
+volumes:
+  clipdeck-data:
+  clipdeck-media:
+  redis-data:

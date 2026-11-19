@@ -1,0 +1,18 @@
+[Script Info]
+Title: ClipDeck AI Generated Subtitles
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,58,&H00FFFFFF,&H000000FF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,4,2,2,40,40,240,1
+Style: Hook,Arial,82,&H0000FFFF,&H000000FF,&H00000000,&H90000000,-1,0,0,0,100,100,1,0,1,5,3,2,40,40,1450,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:02.50,Hook,,0,0,0,,{\b1}NO SHOT HE HIT THIS 🎯{\b0}
+Dialogue: 0,0:00:00.00,0:00:01.35,Default,,0,0,0,,{\c&H0000FFFF&}Wait{\c} what was that?
+Dialogue: 0,0:00:01.35,0:00:03.25,Default,,0,0,0,,No shot he {\c&H0000FFFF&}just hit that{\c}
+Dialogue: 0,0:00:03.25,0:00:05.35,Default,,0,0,0,,{\c&H00FF00&}360 NO SCOPE{\c} across the map!
+Dialogue: 0,0:00:05.35,0:00:07.50,Default,,0,0,0,,HOLY COW {\c&H0000FFFF&}CLIP THAT RIGHT NOW!{\c}
