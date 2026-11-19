@@ -152,7 +152,7 @@ class MomentResponse(BaseModel):
     file_path: str | None
     thumbnail_path: str | None
     chat_data: dict[str, Any] | None
-    chat_messages_snapshot: dict[str, Any] | None
+    chat_messages_snapshot: list[dict[str, Any]] | dict[str, Any] | None
     status: str
     trigger_type: str
     created_at: datetime

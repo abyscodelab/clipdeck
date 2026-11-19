@@ -299,7 +299,7 @@ INSERT INTO public.users (id, username, password_hash, must_change_password)
 VALUES (
     1,
     'admin',
-    '$2b$12$KIXeW9V331L32P76oYmKbe6kH12X1x6Yt0t/e9f.H8E5aXJpG9a2S',
+    '$2b$12$naVEHnPYaZO35cvE1PHgVOuZ23miN2KXolkZfxSIBl4QM049kxRrS',
     false
 )
 ON CONFLICT (username) DO NOTHING;

@@ -88,11 +88,16 @@ export async function apiFetch<T = any>(
 
   let response: Response;
   try {
+    const signal = options.signal || (typeof AbortSignal !== "undefined" && "timeout" in AbortSignal ? AbortSignal.timeout(15000) : undefined);
     response = await fetch(url, {
       ...options,
+      signal,
       headers,
     });
   } catch (err: any) {
+    if (err.name === "TimeoutError") {
+      throw new ApiError(0, "Request timed out. Please check that the backend server is reachable.");
+    }
     throw new ApiError(0, err.message || "Network error. Please check your connection.");
   }
 

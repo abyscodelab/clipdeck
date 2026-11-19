@@ -58,6 +58,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   };
 
+  if (pathname === "/login") {
+    return <>{children}</>;
+  }
+
   if (isLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background p-6">
@@ -73,7 +77,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isAuthenticated && pathname !== "/login") {
+  if (!isAuthenticated) {
     return null;
   }
 
