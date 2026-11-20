@@ -134,11 +134,62 @@ export interface ZoomPunch {
   duration: number;
 }
 
+export type SubtleStyleName =
+  | 'glide'
+  | 'punch'
+  | 'terminal'
+  | 'glass'
+  | 'whisper'
+  | 'keyword'
+  | 'cover'
+  | 'outline'
+  | 'poster'
+  | 'rise'
+  | 'numeral'
+  | 'magazine'
+  | 'flip'
+  | 'cinema'
+  | 'split'
+  | 'accent'
+  | 'chip'
+  | 'title'
+  | 'hype'
+  | 'block'
+  | 'impact'
+  | 'bottom'
+  | 'stack'
+  | 'serif'
+  | 'shine'
+  | 'karaoke'
+  | 'sticker'
+  | 'ticket'
+  | 'highlighter'
+  | 'haiku'
+  | 'duo'
+  | 'editorial'
+  | 'newsroom'
+  | 'cards'
+  | 'quiet'
+  | 'downbeat'
+  | 'billboard'
+  | 'chalkline'
+  | 'singalong'
+  | (string & {});
+
 export interface CaptionConfig {
-  enabled: boolean;
-  style?: 'pop' | 'highlight' | 'subtle' | 'clean';
+  enabled?: boolean;
+  style?: SubtleStyleName;
+  variant?: string;
+  emphasis?: 'auto' | 'numbers' | 'off';
+  emphasis_words?: string;
+  numbers?: 'auto' | 'western' | 'indian' | 'off';
+  behind?: 'auto' | 'on' | 'off';
+  placement?: 'auto' | 'off';
+  font?: string;
   font_size?: number;
   highlight_color?: string;
+  primary_color?: string;
+  position?: 'bottom' | 'middle' | 'top';
 }
 
 export interface EditDecisionList {

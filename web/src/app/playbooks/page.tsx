@@ -67,7 +67,7 @@ export default function PlaybooksPage() {
 ## Pacing & Editing Guidelines
 - 15 to 60 seconds duration
 - Punchy hook within first 2.5 seconds
-- Animated ASS subtitles enabled
+- Subtle animated motion captions enabled (styles: punch, glide, terminal, glass)
 `);
 
   // Fetch Playbooks

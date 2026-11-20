@@ -1,4 +1,4 @@
-"""ASS (Advanced SubStation Alpha) subtitle generator with animated word highlights."""
+"""Subtle-powered subtitle generator with animated word highlights and smart grouping."""
 
 from __future__ import annotations
 
@@ -10,27 +10,18 @@ from clipdeck.shared.transcription.base import WordTimestamp
 logger = logging.getLogger(__name__)
 
 
-def _format_ass_time(seconds: float) -> str:
-    """Format seconds into ASS timestamp H:MM:SS.cs."""
-    hrs = int(seconds // 3600)
-    mins = int((seconds % 3600) // 60)
-    secs = int(seconds % 60)
-    centis = int(round((seconds - int(seconds)) * 100))
-    if centis >= 100:
-        secs += 1
-        centis = 0
-    return f"{hrs}:{mins:02d}:{secs:02d}.{centis:02d}"
-
-
 def generate_ass_subtitles(
     words: list[WordTimestamp],
     output_path: Path,
     style: CaptionStyle | None = None,
     words_per_group: int = 4,
     time_offset: float = 0.0,
+    width: int = 1080,
+    height: int = 1920,
 ) -> Path:
     """
-    Generate an ASS subtitle file with animated word pop/highlighting for 1080x1920 vertical video.
+    Generate an ASS subtitle file using the Subtle caption styling engine.
+    Applies Subtle's typography, colors, position, and word-by-word active pop highlights.
     
     Parameters
     ----------
@@ -39,77 +30,76 @@ def generate_ass_subtitles(
     output_path:
         Path where .ass file should be written.
     style:
-        CaptionStyle specifying colors and font size.
+        CaptionStyle specifying Subtle style name and parameters.
     words_per_group:
-        Number of words displayed simultaneously on screen (default 4).
+        Default fallback chunking if group data unavailable.
     time_offset:
         Offset in seconds subtracted if the clip was trimmed.
+    width, height:
+        Video frame dimensions (default 1080x1920 vertical).
     """
+    from clipdeck.shared.render.subtle_engine import SubtleEngine
+
     caption_style = style or CaptionStyle()
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    engine = SubtleEngine()
 
-    # Vertical position in 1080x1920 canvas
-    margin_v = 420  # bottom third safe zone above UI
-    if caption_style.position == "middle":
-        margin_v = 900
-    elif caption_style.position == "top":
-        margin_v = 1500
+    # Create temporary words.json and captions.json for subtle grouping if possible
+    words_json = output_path.with_suffix(".tmp_words.json")
+    captions_json = output_path.with_suffix(".tmp_captions.json")
 
-    ass_header = f"""[Script Info]
-Title: ClipDeck Auto-Captions
-ScriptType: v4.00+
-PlayResX: 1080
-PlayResY: 1920
-ScaledBorderAndShadow: yes
-
-[V4+ Styles]
-Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,{caption_style.font},{caption_style.font_size},{caption_style.primary_color},&H000000FF,{caption_style.outline_color},&H80000000,-1,0,0,0,100,100,1,0,1,6,2,2,60,60,{margin_v},1
-
-[Events]
-Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-"""
-
-    events: list[str] = []
-
-    # Adjust words by time_offset
-    adjusted_words = [
-        WordTimestamp(
-            word=w.word.strip(),
-            start=max(0.0, w.start - time_offset),
-            end=max(0.0, w.end - time_offset),
-            confidence=w.confidence,
+    try:
+        engine.prepare_words_json(
+            words=words,
+            output_file=words_json,
+            time_offset=time_offset,
+            duration_sec=30.0,
+            width=width,
+            height=height,
         )
-        for w in words
-        if (w.end - time_offset) >= 0.0
-    ]
 
-    # Chunk words into small groups (e.g. 3-4 words per card)
-    for i in range(0, len(adjusted_words), words_per_group):
-        group = adjusted_words[i : i + words_per_group]
-        if not group:
-            continue
+        # Run Subtle group.py synchronously via helper if available
+        import subprocess
+        clean_style = (caption_style.style or "glide").split(":")[0]
+        style_file = engine.styles_dir / f"{clean_style}.json"
+        if not style_file.exists():
+            style_file = engine.styles_dir / "glide.json"
 
-        # For each word in the group, create a dialogue event highlighting that specific word
-        for active_idx, active_word in enumerate(group):
-            w_start = _format_ass_time(active_word.start)
-            w_end = _format_ass_time(active_word.end)
+        cmd = [
+            engine.python_bin,
+            str(engine.scripts_dir / "group.py"),
+            str(words_json),
+            "--style",
+            str(style_file),
+            "--out",
+            str(captions_json),
+            "--emphasis",
+            caption_style.emphasis,
+            "--numbers",
+            caption_style.numbers,
+        ]
+        if caption_style.emphasis_words:
+            cmd.extend(["--emphasis-words", caption_style.emphasis_words])
 
-            line_parts = []
-            for j, w in enumerate(group):
-                clean_word = w.word.upper()
-                if j == active_idx:
-                    # Active word: pop scale 115% and highlight color
-                    line_parts.append(
-                        f"{{\\c{caption_style.highlight_color}&\\fscx115\\fscy115}}{clean_word}{{\\r}}"
-                    )
-                else:
-                    # Normal word: white color
-                    line_parts.append(f"{{\\c{caption_style.primary_color}&}}{clean_word}")
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        if r.returncode != 0:
+            logger.debug("Subtle group.py direct run notice: %s", r.stderr[:200])
+    except Exception as e:
+        logger.debug("Subtle group sync run fallback: %s", e)
 
-            formatted_text = " ".join(line_parts)
-            events.append(f"Dialogue: 0,{w_start},{w_end},Default,,0,0,0,,{formatted_text}")
+    # Generate ASS file using SubtleEngine styling
+    engine.generate_subtle_ass(
+        captions_json_path=captions_json,
+        words=words,
+        output_path=output_path,
+        style_name=caption_style.style or "glide",
+        time_offset=time_offset,
+        c_style=caption_style,
+        width=width,
+        height=height,
+    )
 
-    content = ass_header + "\n".join(events) + "\n"
-    output_path.write_text(content, encoding="utf-8")
+    # Clean up temp files
+    words_json.unlink(missing_ok=True)
+    captions_json.unlink(missing_ok=True)
+
     return output_path

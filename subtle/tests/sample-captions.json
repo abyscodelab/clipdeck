@@ -1,0 +1,322 @@
+{
+ "version": 1,
+ "video": {
+  "width": 720,
+  "height": 1280,
+  "fps": 24.0,
+  "durationMs": 12000
+ },
+ "style": "pop",
+ "language": "en",
+ "pages": [
+  {
+   "startMs": 0,
+   "endMs": 1250,
+   "words": [
+    {
+     "text": "India",
+     "startMs": 0,
+     "endMs": 780,
+     "line": 0,
+     "emphasis": true
+    },
+    {
+     "text": "has",
+     "startMs": 780,
+     "endMs": 1020,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "tried",
+     "startMs": 1020,
+     "endMs": 1260,
+     "line": 0,
+     "emphasis": false
+    }
+   ]
+  },
+  {
+   "startMs": 1250,
+   "endMs": 1791,
+   "words": [
+    {
+     "text": "to",
+     "startMs": 1260,
+     "endMs": 1400,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "break",
+     "startMs": 1400,
+     "endMs": 1620,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "up",
+     "startMs": 1620,
+     "endMs": 1800,
+     "line": 0,
+     "emphasis": false
+    }
+   ]
+  },
+  {
+   "startMs": 1791,
+   "endMs": 2625,
+   "words": [
+    {
+     "text": "with",
+     "startMs": 1800,
+     "endMs": 1980,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "gold",
+     "startMs": 1980,
+     "endMs": 2220,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "three",
+     "startMs": 2220,
+     "endMs": 2620,
+     "line": 0,
+     "emphasis": true
+    }
+   ]
+  },
+  {
+   "startMs": 2625,
+   "endMs": 3416,
+   "words": [
+    {
+     "text": "times,",
+     "startMs": 2620,
+     "endMs": 3040,
+     "line": 0,
+     "emphasis": false
+    }
+   ]
+  },
+  {
+   "startMs": 3416,
+   "endMs": 4250,
+   "words": [
+    {
+     "text": "and",
+     "startMs": 3400,
+     "endMs": 3640,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "every",
+     "startMs": 3640,
+     "endMs": 3980,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "single",
+     "startMs": 3980,
+     "endMs": 4260,
+     "line": 0,
+     "emphasis": true
+    }
+   ]
+  },
+  {
+   "startMs": 4250,
+   "endMs": 6000,
+   "words": [
+    {
+     "text": "time,",
+     "startMs": 4260,
+     "endMs": 4660,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "gold",
+     "startMs": 4960,
+     "endMs": 5240,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "won.",
+     "startMs": 5240,
+     "endMs": 5580,
+     "line": 0,
+     "emphasis": false
+    }
+   ]
+  },
+  {
+   "startMs": 8041,
+   "endMs": 9291,
+   "words": [
+    {
+     "text": "Hi,",
+     "startMs": 8041,
+     "endMs": 8401,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "I'm",
+     "startMs": 8621,
+     "endMs": 8741,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "Meera.",
+     "startMs": 8741,
+     "endMs": 8921,
+     "line": 0,
+     "emphasis": true
+    }
+   ]
+  },
+  {
+   "startMs": 9291,
+   "endMs": 9791,
+   "words": [
+    {
+     "text": "I",
+     "startMs": 9301,
+     "endMs": 9401,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "talk",
+     "startMs": 9401,
+     "endMs": 9581,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "about",
+     "startMs": 9581,
+     "endMs": 9801,
+     "line": 0,
+     "emphasis": false
+    }
+   ]
+  },
+  {
+   "startMs": 9791,
+   "endMs": 10375,
+   "words": [
+    {
+     "text": "things",
+     "startMs": 9801,
+     "endMs": 10001,
+     "line": 0,
+     "emphasis": true
+    },
+    {
+     "text": "I",
+     "startMs": 10001,
+     "endMs": 10161,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "find",
+     "startMs": 10161,
+     "endMs": 10381,
+     "line": 0,
+     "emphasis": false
+    }
+   ]
+  },
+  {
+   "startMs": 10375,
+   "endMs": 10791,
+   "words": [
+    {
+     "text": "fascinating",
+     "startMs": 10381,
+     "endMs": 10801,
+     "line": 0,
+     "emphasis": true
+    }
+   ]
+  },
+  {
+   "startMs": 10791,
+   "endMs": 11791,
+   "words": [
+    {
+     "text": "and",
+     "startMs": 10801,
+     "endMs": 11301,
+     "line": 0,
+     "emphasis": false
+    },
+    {
+     "text": "today",
+     "startMs": 11301,
+     "endMs": 11541,
+     "line": 0,
+     "emphasis": true
+    },
+    {
+     "text": "we'll",
+     "startMs": 11541,
+     "endMs": 11801,
+     "line": 0,
+     "emphasis": false
+    }
+   ]
+  },
+  {
+   "startMs": 11791,
+   "endMs": 12416,
+   "words": [
+    {
+     "text": "discuss",
+     "startMs": 11801,
+     "endMs": 12000,
+     "line": 0,
+     "emphasis": false
+    }
+   ]
+  }
+ ],
+ "big": [
+  {
+   "text": "India",
+   "startMs": 0,
+   "endMs": 780
+  },
+  {
+   "text": "three",
+   "startMs": 2220,
+   "endMs": 2920
+  },
+  {
+   "text": "single",
+   "startMs": 3980,
+   "endMs": 4680
+  },
+  {
+   "text": "Meera",
+   "startMs": 8741,
+   "endMs": 9441
+  },
+  {
+   "text": "fascinating",
+   "startMs": 10381,
+   "endMs": 11081
+  }
+ ]
+}

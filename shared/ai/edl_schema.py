@@ -118,14 +118,24 @@ class ZoomPunch(BaseModel):
 
 
 class CaptionStyle(BaseModel):
-    """Karaoke / subtitle visual styling parameters."""
+    """Subtle animated captions styling parameters (https://github.com/0xpratzyy/subtle)."""
 
+    style: str = "glide"  # Any subtle style: glide, punch, terminal, glass, whisper, keyword, impact, bottom, cards, etc.
+    variant: str = ""  # Optional variant (e.g. "yellow", "lit", "marker")
+    emphasis: str = "auto"  # auto, numbers, off
+    emphasis_words: str = ""  # words to highlight for sure
+    numbers: str = "auto"  # auto, western, indian, off
+    behind: str = "auto"  # auto, on, off
+    placement: str = "auto"  # auto, off
+    cuts: str = "auto"  # auto, off
+    palette: str = "auto"  # auto, off
+    legibility: str = "auto"  # auto, off
+    position: Literal["bottom", "middle", "top"] = "bottom"
     font: str = "Montserrat ExtraBold"
     font_size: int = 48
     primary_color: str = "&H00FFFFFF"  # White in ASS hex
     highlight_color: str = "&H0000FFFF"  # Yellow in ASS hex
     outline_color: str = "&H00000000"  # Black outline
-    position: Literal["bottom", "middle", "top"] = "bottom"
 
 
 class PlatformMetadata(BaseModel):

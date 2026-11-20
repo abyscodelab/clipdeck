@@ -30,7 +30,7 @@
 
 ClipDeck is a self-hosted platform built for content creators, stream editors, and clipping channels. Instead of manually watching hours of VODs, ClipDeck continuously ingests live chat streams and audio levels, analyzes statistical surges in activity (EWMA, z-scores, emote bursts, copypastas, sub bombs), captures low-latency video segments into an in-memory ring buffer, and automatically extracts high-impact clips.
 
-In Phase 2, ClipDeck introduces **AI-powered editorial automation**: moments are transcribed, evaluated against customized multi-tiered playbooks, structured into machine-readable Edit Decision Lists (EDLs), and rendered into 1080x1920 (9:16) vertical videos formatted for TikTok, YouTube Shorts, and Instagram Reels with dynamic ASS subtitles and blurred background layouts.
+In Phase 2, ClipDeck introduces **AI-powered editorial automation**: moments are transcribed, evaluated against customized multi-tiered playbooks, structured into machine-readable Edit Decision Lists (EDLs), and rendered into 1080x1920 (9:16) vertical videos formatted for TikTok, YouTube Shorts, and Instagram Reels with Subtle animated motion captions (39 styles: punch, glide, terminal, glass, keyword, impact, etc.) and blurred background layouts.
 
 ---
 
@@ -48,7 +48,7 @@ In Phase 2, ClipDeck introduces **AI-powered editorial automation**: moments are
 - **AI Moment Scoring:** LLM analysis (Gemini 2.5 Flash, Claude 3.5 Sonnet, GPT-4o) of transcripts + chat reaction spikes to grade virality (0-100), identify hooks, and detect rule violations.
 - **Pydantic-Validated EDL Generator:** Automatic assembly of Edit Decision Lists specifying cut intervals, hook overlays, zoom punches, and subtitle styles with self-healing schema retry loops.
 - **Deterministic 9:16 FFmpeg Renderer:** Hardware-efficient transformation of 16:9 gameplay into 1080x1920 vertical format utilizing blurred background styling (`boxblur`, brightness attenuation) or facecam splits.
-- **Word-Pop ASS Subtitles:** High-energy animated subtitles generated from word-level timestamps with stroke outlines and color highlights burned in or exported as sidecar tracks.
+- **Subtle Animated Motion Captions:** 39 broadcast-quality animated caption styles powered by Subtle (https://github.com/0xpratzyy/subtle) with word-level highlights, number normalization ($5,000, 40%), intelligent clause grouping, and AI emphasis burned directly into video or exported as sidecars.
 - **Spend & Budget Caps:** Daily and monthly expenditure safety controls with real-time token ledger tracking to prevent runaway API costs.
 
 ---
@@ -230,7 +230,7 @@ python3 -m seed.seed --pipeline
 3. **Word-Level Transcription:** Simulates Deepgram Whisper audio alignment with word timestamps.
 4. **AI Virality Scoring:** Grades clip quality (Score: 94.5/100, Tier S), generates hook text, and verifies rule compliance.
 5. **EDL Generation:** Formats cut boundaries, hook text overlays, and 1080x1920 layout instructions.
-6. **FFmpeg 9:16 Render:** Executes deterministic FFmpeg commands to produce `seed/test_clip.mp4` with blurred background and ASS animated subtitles.
+6. **FFmpeg 9:16 Render:** Executes deterministic FFmpeg commands to produce `seed/test_clip.mp4` with blurred background and Subtle animated motion captions.
 7. **Database Persistence:** Inserts rendered `Clip` and thumbnail into `clips` table.
 
 ---

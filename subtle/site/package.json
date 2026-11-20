@@ -1,0 +1,29 @@
+{
+  "name": "subtle-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "prep": "node scripts/prep-fonts.mjs",
+    "dev": "npm run prep && vite",
+    "build": "npm run prep && tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173",
+    "deploy:dry": "wrangler deploy --dry-run"
+  },
+  "dependencies": {
+    "@remotion/layout-utils": "4.0.534",
+    "@remotion/player": "4.0.534",
+    "posthog-js": "1.438.12",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "remotion": "4.0.534"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.0.0",
+    "wrangler": "^4.0.0"
+  }
+}

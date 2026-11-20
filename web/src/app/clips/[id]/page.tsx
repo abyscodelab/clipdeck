@@ -40,6 +40,20 @@ export default function ClipDetailPage() {
 
   const [isRerendering, setIsRerendering] = React.useState(false);
   const [isGeneratingThumb, setIsGeneratingThumb] = React.useState(false);
+  const [selectedSubtleStyle, setSelectedSubtleStyle] = React.useState<string>("punch");
+
+  const SUBTLE_STYLES = [
+    { id: "punch", label: "Punch", desc: "Heavy popping caps with lime highlight (Gaming & Hype)" },
+    { id: "glide", label: "Glide", desc: "Calligraphic script keywords on white sans (Storytelling)" },
+    { id: "terminal", label: "Terminal", desc: "Green monospace blinking cursor (Tech & Dev)" },
+    { id: "glass", label: "Glass", desc: "Frosted-glass pill with brightening words (Modern Clean)" },
+    { id: "impact", label: "Impact", desc: "Overshoot arc bouncing caps with drop shadow (Viral Hooks)" },
+    { id: "bottom", label: "Bottom", desc: "Big bold yellow-accent caps low in frame (Fast Rants)" },
+    { id: "keyword", label: "Keyword", desc: "Giant lime keyword behind streamer (Wide Cam)" },
+    { id: "cards", label: "Cards", desc: "Dark card with serif text and red italic (Quotes & Reactions)" },
+    { id: "highlighter", label: "Highlighter", desc: "Dynamic box hopping from word to word (Podcasts)" },
+    { id: "quiet", label: "Quiet", desc: "Gentle rising lowercase sans (Refined Brand)" },
+  ];
 
   const handleAutoThumbnail = async (thumbMode: "cinematic" | "split" = "cinematic") => {
     setIsGeneratingThumb(true);
@@ -88,13 +102,22 @@ export default function ClipDetailPage() {
     });
   };
 
-  const handleRerender = async () => {
+  const handleRerender = async (overrideStyle?: string) => {
     setIsRerendering(true);
     try {
-      const res = await api.clips.rerender(clipId, clip?.latest_edl || undefined);
+      const currentEdl = (clip?.latest_edl || {}) as any;
+      const targetStyle = overrideStyle || selectedSubtleStyle || currentEdl.captions?.style || "punch";
+      const updatedEdl = {
+        ...currentEdl,
+        captions: {
+          ...(currentEdl.captions || {}),
+          style: targetStyle,
+        },
+      };
+      const res = await api.clips.rerender(clipId, updatedEdl);
       toast({
-        title: "Re-render Queued",
-        message: `Worker Job #${res.job_id} scheduled for 9:16 rendering.`,
+        title: "Subtle Re-render Queued",
+        message: `Worker Job #${res.job_id} scheduled with Subtle style "${targetStyle}".`,
         type: "success",
       });
       mutateClip();
@@ -176,7 +199,7 @@ export default function ClipDetailPage() {
                   <Film className="h-12 w-12 text-accent mb-3 animate-pulse" />
                   <h4 className="text-base font-bold text-white">Clip Rendering</h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Worker is stitching 1080x1920 video with blurred background and ASS subtitles.
+                    Worker is rendering 1080x1920 vertical video with Subtle animated motion captions.
                   </p>
                 </div>
               )}
@@ -200,7 +223,7 @@ export default function ClipDetailPage() {
               <Button
                 variant="outline"
                 disabled={isRerendering}
-                onClick={handleRerender}
+                onClick={() => handleRerender()}
                 className="gap-1.5 text-xs text-neutral-300"
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${isRerendering ? "animate-spin" : ""}`} />
@@ -463,6 +486,43 @@ export default function ClipDetailPage() {
                       </div>
                     </div>
                   )}
+
+                  {/* Subtle Caption Style Selector */}
+                  <div className="pt-2 border-t border-border/60 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-white text-xs flex items-center gap-1.5">
+                        <Sparkles className="h-3.5 w-3.5 text-accent" />
+                        Subtle Caption Style
+                      </span>
+                      <Badge variant="outline" className="text-[10px] uppercase font-mono tracking-wider border-accent/40 text-accent">
+                        {(edl.captions as any)?.style || selectedSubtleStyle || "punch"}
+                      </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 pt-1">
+                      {SUBTLE_STYLES.map((st) => {
+                        const isCurrent = ((edl.captions as any)?.style || selectedSubtleStyle) === st.id;
+                        return (
+                          <button
+                            key={st.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedSubtleStyle(st.id);
+                              handleRerender(st.id);
+                            }}
+                            className={`p-2 rounded-xl text-left border transition-all text-[11px] flex flex-col justify-between ${
+                              isCurrent
+                                ? "bg-accent/15 border-accent text-white shadow-sm"
+                                : "bg-neutral-900/60 border-border/80 text-neutral-300 hover:border-neutral-500 hover:text-white"
+                            }`}
+                          >
+                            <span className="font-bold capitalize">{st.label}</span>
+                            <span className="text-[9px] text-neutral-400 line-clamp-1 mt-0.5">{st.desc}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}

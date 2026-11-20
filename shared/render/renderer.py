@@ -14,7 +14,7 @@ from clipdeck.shared.render.effects import build_hook_text_filter, build_zoom_pu
 from clipdeck.shared.render.layouts.blurred_bg import build_blurred_bg_filter
 from clipdeck.shared.render.layouts.face_track import build_face_track_filter
 from clipdeck.shared.render.layouts.facecam_split import build_facecam_split_filter
-from clipdeck.shared.render.subtitles import generate_ass_subtitles
+from clipdeck.shared.render.subtle_engine import SubtleEngine
 from clipdeck.shared.transcription.base import WordTimestamp
 
 logger = logging.getLogger(__name__)
@@ -66,23 +66,12 @@ class VerticalVideoRenderer:
         out_point = edl.trim.out_point
         duration = max(1.0, out_point - in_point)
 
-        # Temporary subtitle file
-        with tempfile.NamedTemporaryFile(suffix=".ass", delete=False) as tmp:
-            ass_path = Path(tmp.name)
+        # Base intermediate video if captions will be applied by Subtle
+        has_captions = bool(words)
+        base_video_path = output_path.with_name(f"{output_path.stem}_base.mp4") if has_captions else output_path
 
         try:
-            # 1. Generate subtitles
-            if words:
-                generate_ass_subtitles(
-                    words=words,
-                    output_path=ass_path,
-                    style=edl.captions,
-                    time_offset=in_point,
-                )
-            else:
-                ass_path.write_text("[Script Info]\nTitle: Empty\n[Events]\n", encoding="utf-8")
-
-            # 2. Build layout filter
+            # 1. Build layout filter
             layout_type = edl.layout.type
             if layout_type == "facecam_split":
                 layout_filter = build_facecam_split_filter(
@@ -102,7 +91,7 @@ class VerticalVideoRenderer:
                     output_label="v_layout",
                 )
 
-            # 3. Build zoom punches filter
+            # 2. Build zoom punches filter
             # Adjust punch timestamps relative to trim in_point
             adjusted_punches = [
                 p.model_copy(update={"timestamp": max(0.0, p.timestamp - in_point)})
@@ -115,7 +104,7 @@ class VerticalVideoRenderer:
                 output_label="v_zoom",
             )
 
-            # 4. Build hook text filter
+            # 3. Build hook text filter
             if edl.hook_text:
                 hook_filter = build_hook_text_filter(
                     hook_text=edl.hook_text,
@@ -123,25 +112,18 @@ class VerticalVideoRenderer:
                     input_label="v_zoom",
                     output_label="v_hook",
                 )
-                sub_input_label = "v_hook"
+                final_v_label = "v_hook"
             else:
-                hook_filter = "[v_zoom]null[v_hook];"
-                sub_input_label = "v_hook"
+                hook_filter = "[v_zoom]null[v_hook]"
+                final_v_label = "v_hook"
 
-            # 5. ASS subtitle filter
-            escaped_ass = str(ass_path.resolve()).replace(":", "\\:").replace("\\", "/")
-            if words:
-                sub_filter = f"[{sub_input_label}]ass='{escaped_ass}'[v_final]"
-            else:
-                sub_filter = f"[{sub_input_label}]null[v_final]"
-
-            # Assemble full video filtergraph
-            filter_complex = f"{layout_filter};{zoom_filter};{hook_filter};{sub_filter}"
+            # Assemble full video filtergraph for base 9:16 layout
+            filter_complex = f"{layout_filter};{zoom_filter};{hook_filter}"
 
             # Audio filter: -14 LUFS broadcast normalization
             audio_filter = "loudnorm=I=-14:TP=-1.5:LRA=11"
 
-            # FFmpeg CLI command
+            # FFmpeg CLI command to render base 9:16 short
             cmd = [
                 "ffmpeg",
                 "-hide_banner",
@@ -158,7 +140,7 @@ class VerticalVideoRenderer:
                 "-filter_complex",
                 filter_complex,
                 "-map",
-                "[v_final]",
+                f"[{final_v_label}]",
                 "-map",
                 "0:a?",
                 "-af",
@@ -181,10 +163,10 @@ class VerticalVideoRenderer:
                 "48000",
                 "-movflags",
                 "+faststart",
-                str(output_path),
+                str(base_video_path),
             ]
 
-            logger.info("Starting vertical render: %s", " ".join(cmd[:12]))
+            logger.info("Starting vertical base render: %s", " ".join(cmd[:12]))
             proc = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -196,6 +178,20 @@ class VerticalVideoRenderer:
                 err_msg = stderr.decode("utf-8", errors="replace")
                 logger.error("FFmpeg render failed (%d): %s", proc.returncode, err_msg)
                 raise RuntimeError(f"FFmpeg render failed: {err_msg}")
+
+            # 4. Apply Subtle Captions
+            if has_captions and words:
+                logger.info("Applying Subtle captions (style: %s)...", edl.captions.style)
+                subtle_engine = SubtleEngine()
+                await subtle_engine.render(
+                    video_path=base_video_path,
+                    words=words,
+                    caption_style=edl.captions,
+                    output_path=output_path,
+                    time_offset=in_point,
+                )
+                if base_video_path.exists() and base_video_path != output_path:
+                    base_video_path.unlink()
 
             # Generate 1080x1920 vertical GTA VI-style thumbnail
             try:
@@ -262,8 +258,8 @@ class VerticalVideoRenderer:
             )
 
         finally:
-            if ass_path.exists():
+            if base_video_path.exists() and base_video_path != output_path:
                 try:
-                    ass_path.unlink()
+                    base_video_path.unlink()
                 except OSError:
                     pass

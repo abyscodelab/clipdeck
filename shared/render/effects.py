@@ -6,6 +6,23 @@ import re
 from clipdeck.shared.ai.edl_schema import ZoomPunch
 
 
+_has_drawtext: bool | None = None
+
+
+def has_drawtext_filter() -> bool:
+    """Check if the system FFmpeg binary has drawtext filter enabled."""
+    global _has_drawtext
+    if _has_drawtext is not None:
+        return _has_drawtext
+    try:
+        import subprocess
+        res = subprocess.run(["ffmpeg", "-filters"], capture_output=True, text=True, timeout=2)
+        _has_drawtext = "drawtext" in res.stdout
+    except Exception:
+        _has_drawtext = False
+    return _has_drawtext
+
+
 def _escape_drawtext(text: str) -> str:
     """Escape special characters for FFmpeg drawtext filter."""
     text = text.replace("\\", "\\\\")
@@ -23,7 +40,11 @@ def build_hook_text_filter(
 ) -> str:
     """
     Build drawtext filter displaying bold hook text at top of screen for duration seconds.
+    If drawtext filter is not supported by FFmpeg binary, safely passes through.
     """
+    if not has_drawtext_filter():
+        return f"[{input_label}]null[{output_label}]"
+
     escaped = _escape_drawtext(hook_text.strip().upper())
     return (
         f"[{input_label}]drawtext=text='{escaped}':"

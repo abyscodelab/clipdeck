@@ -65,8 +65,17 @@ EDITING RULES:
 2. Hook in first 2 seconds! Provide a catchy `hook_text` (all caps, punchy).
 3. Cut dead air over 0.7 seconds using `cuts`.
 4. Include 1-2 zoom punches on climax moments using `zoom_punches`.
-5. Write compelling, high-CTR `title`, `description` (credit @{streamer_name}), and 5-8 `hashtags`.
-6. Provide platform-specific titles and descriptions in `per_platform` (keys: 'tiktok', 'youtube_shorts', 'instagram_reels').
+5. Select the best Subtle animated caption style:
+   - 'punch': high energy popping caps with lime highlight (best for clutch, rage, funny, gaming)
+   - 'glide': calligraphic script key words on white sans (best for hype, commentary, storytelling)
+   - 'terminal': green monospace code cursor (best for tech, stats, coding)
+   - 'glass': frosted-glass pill, words dim and brighten (clean, modern)
+   - 'impact': heavy round bouncing caps with overshoot (high-energy viral hooks)
+   - 'bottom': big bold caps low in the frame (fast speech, rants)
+   - 'keyword': giant keyword behind streamer (solo stream cam)
+   - 'cards': white serif on dark card with red italic emphasis (reactions, quotes)
+6. Write compelling, high-CTR `title`, `description` (credit @{streamer_name}), and 5-8 `hashtags`.
+7. Provide platform-specific titles and descriptions in `per_platform` (keys: 'tiktok', 'youtube_shorts', 'instagram_reels').
 
 Respond ONLY with a valid JSON object matching the EditDecisionList schema:
 {{
@@ -76,11 +85,10 @@ Respond ONLY with a valid JSON object matching the EditDecisionList schema:
   "hook_text": "string or null",
   "hook_duration": 2.5,
   "captions": {{
-    "font": "Montserrat ExtraBold",
-    "font_size": 48,
-    "primary_color": "&H00FFFFFF",
-    "highlight_color": "&H0000FFFF",
-    "outline_color": "&H00000000",
+    "style": "punch",
+    "variant": "",
+    "emphasis": "auto",
+    "numbers": "auto",
     "position": "bottom"
   }},
   "zoom_punches": [ {{ "timestamp": float, "scale": 1.15, "duration": 1.0 }} ],
@@ -140,12 +148,14 @@ def _create_fallback_edl(
     in_pt = max(0.0, score_result.best_in)
     out_pt = max(in_pt + 15.0, score_result.best_out)
 
+    chosen_style = "punch" if score_result.category in ("clutch", "rage", "funny") else "glide"
     return EditDecisionList(
         trim={"in_point": in_pt, "out_point": out_pt},
         cuts=[],
         layout={"type": layout_type},
         hook_text="WAIT FOR IT...",
         hook_duration=2.5,
+        captions={"style": chosen_style, "emphasis": "auto", "numbers": "auto"},
         zoom_punches=[],
         title=f"INSANE Moment with @{streamer_name}!",
         description=f"Can't believe this happened live! 🎥 @{streamer_name}",

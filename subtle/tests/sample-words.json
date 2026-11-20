@@ -1,0 +1,194 @@
+{
+ "version": 1,
+ "source": {
+  "sha256": "sample",
+  "durationMs": 12000,
+  "fps": 24,
+  "width": 720,
+  "height": 1280
+ },
+ "language": "en",
+ "model": "sample",
+ "words": [
+  {
+   "text": "India",
+   "startMs": 0,
+   "endMs": 780,
+   "prob": 0.9
+  },
+  {
+   "text": "has",
+   "startMs": 780,
+   "endMs": 1020,
+   "prob": 0.9
+  },
+  {
+   "text": "tried",
+   "startMs": 1020,
+   "endMs": 1260,
+   "prob": 0.9
+  },
+  {
+   "text": "to",
+   "startMs": 1260,
+   "endMs": 1400,
+   "prob": 0.9
+  },
+  {
+   "text": "break",
+   "startMs": 1400,
+   "endMs": 1620,
+   "prob": 0.9
+  },
+  {
+   "text": "up",
+   "startMs": 1620,
+   "endMs": 1800,
+   "prob": 0.9
+  },
+  {
+   "text": "with",
+   "startMs": 1800,
+   "endMs": 1980,
+   "prob": 0.9
+  },
+  {
+   "text": "gold",
+   "startMs": 1980,
+   "endMs": 2220,
+   "prob": 0.9
+  },
+  {
+   "text": "three",
+   "startMs": 2220,
+   "endMs": 2620,
+   "prob": 0.9
+  },
+  {
+   "text": "times,",
+   "startMs": 2620,
+   "endMs": 3040,
+   "prob": 0.9
+  },
+  {
+   "text": "and",
+   "startMs": 3400,
+   "endMs": 3640,
+   "prob": 0.9
+  },
+  {
+   "text": "every",
+   "startMs": 3640,
+   "endMs": 3980,
+   "prob": 0.9
+  },
+  {
+   "text": "single",
+   "startMs": 3980,
+   "endMs": 4260,
+   "prob": 0.9
+  },
+  {
+   "text": "time,",
+   "startMs": 4260,
+   "endMs": 4660,
+   "prob": 0.9
+  },
+  {
+   "text": "gold",
+   "startMs": 4960,
+   "endMs": 5240,
+   "prob": 0.9
+  },
+  {
+   "text": "won.",
+   "startMs": 5240,
+   "endMs": 5580,
+   "prob": 0.9
+  },
+  {
+   "text": "Hi,",
+   "startMs": 8041,
+   "endMs": 8401,
+   "prob": 0.9
+  },
+  {
+   "text": "I'm",
+   "startMs": 8621,
+   "endMs": 8741,
+   "prob": 0.9
+  },
+  {
+   "text": "Meera.",
+   "startMs": 8741,
+   "endMs": 8921,
+   "prob": 0.9
+  },
+  {
+   "text": "I",
+   "startMs": 9301,
+   "endMs": 9401,
+   "prob": 0.9
+  },
+  {
+   "text": "talk",
+   "startMs": 9401,
+   "endMs": 9581,
+   "prob": 0.9
+  },
+  {
+   "text": "about",
+   "startMs": 9581,
+   "endMs": 9801,
+   "prob": 0.9
+  },
+  {
+   "text": "things",
+   "startMs": 9801,
+   "endMs": 10001,
+   "prob": 0.9
+  },
+  {
+   "text": "I",
+   "startMs": 10001,
+   "endMs": 10161,
+   "prob": 0.9
+  },
+  {
+   "text": "find",
+   "startMs": 10161,
+   "endMs": 10381,
+   "prob": 0.9
+  },
+  {
+   "text": "fascinating",
+   "startMs": 10381,
+   "endMs": 10801,
+   "prob": 0.9
+  },
+  {
+   "text": "and",
+   "startMs": 10801,
+   "endMs": 11301,
+   "prob": 0.9
+  },
+  {
+   "text": "today",
+   "startMs": 11301,
+   "endMs": 11541,
+   "prob": 0.9
+  },
+  {
+   "text": "we'll",
+   "startMs": 11541,
+   "endMs": 11801,
+   "prob": 0.9
+  },
+  {
+   "text": "discuss",
+   "startMs": 11801,
+   "endMs": 12000,
+   "prob": 0.9
+  }
+ ]
+}

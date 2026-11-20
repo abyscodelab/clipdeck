@@ -1,0 +1,60 @@
+/* Copied from refs.video (web/src/components/footer.css): the Refs timeline footer. It carries its own colours and type, so it looks the
+   same under the home page's styles and the rest of the site's. */
+.lf{--c-canvas:#070707;--c-surface:#0F0F0F;--c-raised:#161616;--c-ink:#EFEFEF;--c-ink-2:#B4B4B3;--c-muted:#838281;--c-line:#1F1F1F;--c-line-strong:#2E2E2E;--c-signal:#86E4F0;--c-focus:#EFEFEF;
+  --lf-ui:'Figtree',system-ui,sans-serif;--lf-data:'DM Mono',ui-monospace,monospace;--lf-gutter:clamp(1rem,3vw,3rem);
+  box-sizing:border-box;display:block;margin:112px auto 0;max-width:1440px;padding:0 var(--lf-gutter) 40px;overflow-x:clip;
+  font-family:var(--lf-ui);font-size:16px;line-height:1.5;color:var(--c-ink);-webkit-font-smoothing:antialiased;text-align:left}
+.lf *,.lf *::before,.lf *::after{box-sizing:border-box;margin:0;padding:0;border:0 solid}
+.lf a{color:inherit;text-decoration:none}
+.lf ul{list-style:none}
+.lf img{display:block;max-width:none}
+.lf a:focus-visible{outline:2px solid var(--c-focus);outline-offset:3px}
+.lf .lf-num{font-family:var(--lf-data);font-weight:500;letter-spacing:-0.02em;font-variant-numeric:tabular-nums lining-nums;font-feature-settings:"tnum" 1,"lnum" 1}
+.lf .lf-in{border-top:1px solid var(--c-line);padding-top:48px}
+.lf .lf-sym{display:inline-block;flex:none;width:1.07em;height:1.18em;background:currentColor;-webkit-mask:url(/brand/refs-symbol-white.svg) center/contain no-repeat;mask:url(/brand/refs-symbol-white.svg) center/contain no-repeat}
+.lf .lf-wm{display:inline-flex;align-items:center;gap:7px;font-family:'Figtree',system-ui,sans-serif;font-size:25px;font-weight:600;line-height:1;letter-spacing:-0.06em;color:var(--c-ink)}
+.lf .lf-blurb{margin-top:12px;max-width:46ch;font-size:14px;line-height:20px;color:var(--c-muted)}
+.lf .lf-tl{margin-top:56px;display:flex;user-select:none;-webkit-user-select:none}
+.lf .lf-trk{width:40px;flex-shrink:0}
+.lf .lf-trk-gap{height:28px}
+.lf .lf-trk-row{display:flex;height:40px;align-items:center}
+.lf .lf-trk-row span{font-size:10px;line-height:15px;color:var(--c-muted)}
+.lf .lf-lanes{position:relative;min-width:0;flex:1 1 0%}
+.lf .lf-ruler{position:relative;height:28px;cursor:ew-resize;touch-action:none;border-bottom:1px solid var(--c-line)}
+.lf .lf-t{position:absolute;bottom:0}
+.lf .lf-t i{display:block;width:1px;height:4px;background:var(--c-line)}
+.lf .lf-t.lf-t5 i{height:8px;background:var(--c-line-strong)}
+.lf .lf-t b{position:absolute;bottom:10px;transform:translateX(-50%);font-size:10px;line-height:15px;color:var(--c-muted);font-weight:500;white-space:nowrap}
+.lf .lf-track{position:relative;height:40px;border-bottom:1px solid var(--c-line)}
+.lf .lf-clip{position:absolute;top:4px;bottom:4px}
+.lf .lf-clip a{position:relative;display:flex;width:100%;height:100%;align-items:center;overflow:hidden;border-radius:3px;border:1px solid var(--c-line);background:rgba(15,15,15,.4);padding:0 10px;font-size:13px;line-height:19.5px;color:var(--c-ink-2);transition:color .2s cubic-bezier(.4,0,.2,1),background-color .2s cubic-bezier(.4,0,.2,1),border-color .2s cubic-bezier(.4,0,.2,1)}
+.lf .lf-clip[data-live] a{border-color:var(--c-line-strong);color:var(--c-ink)}
+.lf .lf-clip a:hover{border-color:rgba(180,180,179,.6);background:var(--c-raised);color:var(--c-ink)}
+.lf .lf-lbl{position:relative;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lf .lf-ext{color:var(--c-muted)}
+.lf .lf-reel{pointer-events:none;position:absolute;inset:0;display:flex;opacity:0;filter:grayscale(100%);transition:opacity .3s cubic-bezier(.4,0,.2,1)}
+.lf .lf-clip:hover .lf-reel,.lf .lf-clip:focus-within .lf-reel{opacity:.18}
+.lf .lf-reel img{aspect-ratio:16/9;height:100%;flex-shrink:0;object-fit:cover}
+.lf .lf-ph{pointer-events:none;position:absolute;top:0;bottom:0;left:0;z-index:10;width:0;will-change:transform}
+.lf .lf-ph-h{position:absolute;left:-3.5px;top:5px;width:8px;height:8px;background:var(--c-signal)}
+.lf .lf-ph-l{position:absolute;bottom:0;left:-.5px;top:5px;width:1px;background:var(--c-signal)}
+.lf .lf-tc{position:absolute;top:-15px;white-space:nowrap;font-size:10px;line-height:14px;color:var(--c-ink-2)}
+.lf .lf-tc[data-side=right]{left:-3px}
+.lf .lf-tc[data-side=left]{right:-3px}
+.lf .lf-foot{margin-top:32px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;line-height:17.333px;color:var(--c-muted)}
+.lf .lf-label{display:flex;align-items:center;gap:8px;font-family:var(--lf-data);font-weight:500;font-size:12px;line-height:16px;letter-spacing:.06em;text-transform:uppercase}
+.lf .lf-dot{display:inline-block;width:6px;height:6px;background:var(--c-muted)}
+@media (max-width:767px){.lf .lf-trk{width:28px}
+.lf .lf-clip a{padding:0 6px;font-size:12px}}
+
+/* The offer bar (OfferBar), as refs.video's .offer */
+.ob { min-height: 36px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 8px; padding: 7px 16px;
+  font-size: 13px; line-height: 1.35; text-align: center; color: var(--ink2); background: rgba(10,10,11,.6); border-bottom: 1px solid rgba(255,255,255,.06); position: relative; z-index: 6; }
+.ob b { color: var(--ink); font-weight: 600; }
+.ob .short { display: none; }
+.ob-clock { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--ice); letter-spacing: .02em; }
+.ob-clock i { font-style: normal; opacity: .6; }
+.ob a { position: relative; color: var(--ink); font-weight: 600; white-space: nowrap; text-decoration: underline; text-decoration-color: var(--line2); text-underline-offset: 3px; }
+.ob a::after { content: ""; position: absolute; inset: -13px -8px; }
+.ob a:hover { text-decoration-color: var(--ink2); }
+@media (max-width: 560px) { .ob .long { display: none; } .ob .short { display: inline; } }

@@ -22,6 +22,15 @@ from app.services.sse_service import broadcaster
 router = APIRouter(prefix="/api/clips", tags=["clips"])
 
 
+@router.get("/subtle-styles")
+async def get_subtle_styles():
+    """Return all 39 Subtle animated caption styles with metadata."""
+    from clipdeck.shared.render.subtle_engine import SubtleEngine
+
+    engine = SubtleEngine()
+    return engine.list_styles()
+
+
 @router.get("", response_model=list[ClipResponse])
 async def list_clips(
     streamer_id: int | None = None,

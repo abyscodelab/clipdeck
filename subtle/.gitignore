@@ -1,0 +1,19 @@
+# local test material never goes in the repo
+tests/clips/
+tests/out/
+.subtle/
+# build and install output
+node_modules/
+scripts/vision-matte/.build/
+.remotion/
+template/.remotion/
+template/build/
+*.captioned.mp4
+.DS_Store
+__pycache__/
+*.pyc
+scripts/vision-subject/.build/
+
+# showcase demo media (third-party clip): not in the repo
+site/public/demo/
+site/public/og.jpg

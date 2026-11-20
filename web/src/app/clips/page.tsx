@@ -56,7 +56,7 @@ export default function ClipsPage() {
               Vertical Clips (9:16)
             </h1>
             <p className="text-xs text-muted-foreground mt-1">
-              AI-edited vertical videos formatted with ASS animated subtitles and blurred backgrounds for TikTok, Reels & Shorts.
+              AI-edited vertical videos formatted with Subtle animated motion captions and 9:16 vertical layouts for TikTok, Reels & Shorts.
             </p>
           </div>
 
