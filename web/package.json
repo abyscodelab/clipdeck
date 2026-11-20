@@ -11,7 +11,10 @@
   "dependencies": {
     "@solar-icons/react": "^2.6.0",
     "@supabase/supabase-js": "^2.119.2",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "jose": "^6.2.18",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
