@@ -36,10 +36,19 @@ import type {
   GenerateThumbnailRequest,
 } from "./types";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL !== undefined
-    ? process.env.NEXT_PUBLIC_API_URL
-    : "";
+export function getApiBaseUrl(): string {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL || "";
+  if (isBrowser()) {
+    const isRemote =
+      window.location.hostname !== "localhost" &&
+      window.location.hostname !== "127.0.0.1";
+    // If running in browser on a remote domain (e.g. *.netlify.app), do not attempt to contact localhost
+    if (isRemote && (envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))) {
+      return "";
+    }
+  }
+  return envUrl;
+}
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -76,7 +85,7 @@ export async function apiFetch<T = any>(
 ): Promise<T> {
   const url = endpoint.startsWith("http")
     ? endpoint
-    : `${API_BASE_URL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+    : `${getApiBaseUrl()}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
 
   const headers = new Headers(options.headers || {});
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
@@ -134,7 +143,7 @@ export async function apiFetch<T = any>(
     isRefreshing = true;
 
     try {
-      const refreshRes = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+      const refreshRes = await fetch(`${getApiBaseUrl()}/api/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token: refreshToken }),

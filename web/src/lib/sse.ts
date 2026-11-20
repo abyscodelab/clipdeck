@@ -66,7 +66,15 @@ class SSEClient {
     }
     this.abortController = new AbortController();
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const envUrl = process.env.NEXT_PUBLIC_API_URL || "";
+    const isRemote =
+      typeof window !== "undefined" &&
+      window.location.hostname !== "localhost" &&
+      window.location.hostname !== "127.0.0.1";
+    const baseUrl =
+      isRemote && (envUrl.includes("localhost") || envUrl.includes("127.0.0.1"))
+        ? ""
+        : envUrl;
     const url = `${baseUrl}/api/live/events?token=${encodeURIComponent(token)}`;
 
     try {
