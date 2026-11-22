@@ -26,10 +26,10 @@ export function useLiveData() {
   const { subscribe } = useSSE();
   const { toast } = useToast();
 
-  // Load initial data
-  const loadInitialData = React.useCallback(async () => {
+  // Load initial data (only shows skeletons on initial mount, silent updates afterwards)
+  const loadInitialData = React.useCallback(async (isInitial = false) => {
     try {
-      setIsLoading(true);
+      if (isInitial) setIsLoading(true);
       const [fetchedStreamers, fetchedMoments, fetchedSessions] = await Promise.all([
         api.streamers.list().catch(() => []),
         api.moments.list({ limit: 30 }).catch(() => []),
@@ -66,34 +66,36 @@ export function useLiveData() {
 
       // Pre-seed some mock historical sparkline points for live streamers so charts start active
       const now = Date.now();
-      const initialSparklines: Record<number, SparklinePoint[]> = {};
-      updatedStreamers.forEach((st) => {
-        if (st && st.is_live) {
-          const points: SparklinePoint[] = [];
-          for (let i = 30; i >= 0; i--) {
-            const base = 25 + Math.random() * 20;
-            points.push({
-              time: now - i * 2000,
-              score: Math.round(base),
-              mps: parseFloat((base / 8).toFixed(1)),
-            });
+      setSparklines((prev) => {
+        const next: Record<number, SparklinePoint[]> = { ...prev };
+        updatedStreamers.forEach((st) => {
+          if (st && st.is_live && !next[st.id]) {
+            const points: SparklinePoint[] = [];
+            for (let i = 30; i >= 0; i--) {
+              const base = 25 + Math.random() * 20;
+              points.push({
+                time: now - i * 2000,
+                score: Math.round(base),
+                mps: parseFloat((base / 8).toFixed(1)),
+              });
+            }
+            next[st.id] = points;
           }
-          initialSparklines[st.id] = points;
-        }
+        });
+        return next;
       });
-      setSparklines(initialSparklines);
     } catch (err) {
       console.error("Failed to load live data:", err);
     } finally {
-      setIsLoading(false);
+      if (isInitial) setIsLoading(false);
     }
   }, []);
 
   React.useEffect(() => {
-    loadInitialData();
+    loadInitialData(true);
     const interval = setInterval(() => {
-      loadInitialData();
-    }, 30000);
+      loadInitialData(false);
+    }, 20000);
     return () => clearInterval(interval);
   }, [loadInitialData]);
 

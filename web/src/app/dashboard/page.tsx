@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
 import { LiveGrid } from "@/components/dashboard/live-grid";
 import { MomentFeed } from "@/components/dashboard/moment-feed";
 import { useLiveData } from "@/hooks/use-live-data";
@@ -22,7 +23,15 @@ export default function DashboardPage() {
   const [mobileTab, setMobileTab] = React.useState<"live" | "moments">("live");
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
+      {/* 4 Key Analytics KPI Cards */}
+      <AnalyticsOverview
+        streamers={streamers}
+        liveStreamers={liveStreamers}
+        moments={moments}
+        isLoading={isLoading}
+      />
+
       {/* Mobile Tab Switcher (Visible only on small screens) */}
       <div className="flex md:hidden rounded-full bg-white/[0.04] border border-border p-1 gap-1">
         <button
