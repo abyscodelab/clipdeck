@@ -44,8 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setIsAuthenticated(true);
       const userData = await api.auth.me();
-      setUser(userData);
-      setMustChangePassword(userData.must_change_password);
+      if (userData && typeof userData === "object") {
+        setUser(userData);
+        setMustChangePassword(Boolean(userData.must_change_password));
+      }
     } catch (err) {
       console.warn("Failed to fetch user:", err);
       if (err instanceof ApiError && err.status === 401) {

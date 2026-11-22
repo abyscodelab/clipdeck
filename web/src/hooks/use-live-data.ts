@@ -36,35 +36,39 @@ export function useLiveData() {
         api.sessions.list().catch(() => []),
       ]);
 
+      const safeStreamers: Streamer[] = Array.isArray(fetchedStreamers) ? fetchedStreamers : [];
+      const safeMoments: Moment[] = Array.isArray(fetchedMoments) ? fetchedMoments : [];
+      const safeSessions: any[] = Array.isArray(fetchedSessions) ? fetchedSessions : [];
+
       // Map live sessions to streamers
       const liveSessionMap = new Map<number, any>();
-      fetchedSessions.forEach((s) => {
-        if (s.status === "live") {
+      safeSessions.forEach((s) => {
+        if (s && s.status === "live") {
           liveSessionMap.set(s.streamer_id, s);
         }
       });
 
-      const updatedStreamers = fetchedStreamers.map((st) => {
+      const updatedStreamers = safeStreamers.map((st) => {
         const liveSession = liveSessionMap.get(st.id);
-        const isLive = st.is_live !== undefined ? st.is_live : !!liveSession;
+        const isLive = st.is_live !== undefined ? Boolean(st.is_live) : !!liveSession;
         return {
           ...st,
           is_live: isLive,
-          viewer_count: st.viewer_count ?? liveSession?.viewer_count ?? (isLive ? 1200 : 0),
-          current_hype: isLive ? (st.current_hype ?? 35) : 0,
-          current_mps: isLive ? (st.current_mps ?? 4.5) : 0,
+          viewer_count: Number(st.viewer_count ?? liveSession?.viewer_count ?? (isLive ? 1200 : 0)) || 0,
+          current_hype: isLive ? Number(st.current_hype ?? 35) : 0,
+          current_mps: isLive ? Number(st.current_mps ?? 4.5) : 0,
           active_session_id: st.active_session_id ?? liveSession?.id,
         };
       });
 
       setStreamers(updatedStreamers);
-      setMoments(fetchedMoments);
+      setMoments(safeMoments);
 
       // Pre-seed some mock historical sparkline points for live streamers so charts start active
       const now = Date.now();
       const initialSparklines: Record<number, SparklinePoint[]> = {};
       updatedStreamers.forEach((st) => {
-        if (st.is_live) {
+        if (st && st.is_live) {
           const points: SparklinePoint[] = [];
           for (let i = 30; i >= 0; i--) {
             const base = 25 + Math.random() * 20;
@@ -217,15 +221,16 @@ export function useLiveData() {
     }
   };
 
-  const liveStreamers = streamers.filter((s) => s.is_live);
-  const offlineStreamers = streamers.filter((s) => !s.is_live);
+  const safeStreamerList = Array.isArray(streamers) ? streamers : [];
+  const liveStreamers = safeStreamerList.filter((s) => s && s.is_live);
+  const offlineStreamers = safeStreamerList.filter((s) => s && !s.is_live);
 
   return {
-    streamers,
+    streamers: safeStreamerList,
     liveStreamers,
     offlineStreamers,
-    moments,
-    sparklines,
+    moments: Array.isArray(moments) ? moments : [],
+    sparklines: sparklines || {},
     isLoading,
     refresh: loadInitialData,
     clipNow,

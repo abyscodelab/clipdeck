@@ -23,16 +23,21 @@ export function MomentFeed({
 }: MomentFeedProps) {
   const [filter, setFilter] = React.useState<"all" | "detected" | "approved">("all");
 
+  const safeStreamers = Array.isArray(streamers) ? streamers : [];
+  const safeMoments = Array.isArray(moments) ? moments : [];
+
   const streamerMap = React.useMemo(() => {
     const map = new Map<number, string>();
-    streamers.forEach((s) => map.set(s.id, s.name));
+    safeStreamers.forEach((s) => {
+      if (s && s.id) map.set(s.id, s.name);
+    });
     return map;
-  }, [streamers]);
+  }, [safeStreamers]);
 
   const filteredMoments = React.useMemo(() => {
-    if (filter === "all") return moments;
-    return moments.filter((m) => m.status === filter);
-  }, [moments, filter]);
+    if (filter === "all") return safeMoments;
+    return safeMoments.filter((m) => m && m.status === filter);
+  }, [safeMoments, filter]);
 
   return (
     <div className="space-y-4">

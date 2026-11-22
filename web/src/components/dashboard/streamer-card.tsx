@@ -23,15 +23,14 @@ export function StreamerCard({
   sparklinePoints = [],
   onClip,
 }: StreamerCardProps) {
-  const currentScore = streamer.current_hype ?? 0;
-  const currentMps = streamer.current_mps ?? 0;
+  const currentScore = Number(streamer.current_hype ?? 0) || 0;
+  const currentMps = Number(streamer.current_mps ?? 0) || 0;
   const hypeColor = getHypeColor(currentScore);
 
-  const platformBadgeVariant = {
-    twitch: "twitch",
-    kick: "kick",
-    youtube: "youtube",
-  }[streamer.platform] as "twitch" | "kick" | "youtube";
+  const platformKey = (streamer.platform?.toLowerCase() || "youtube") as "twitch" | "kick" | "youtube";
+  const platformBadgeVariant = (["twitch", "kick", "youtube"].includes(platformKey)
+    ? platformKey
+    : "default") as any;
 
   return (
     <Card className="overflow-hidden border-border bg-surface hover:border-white/20 transition-all flex flex-col justify-between">

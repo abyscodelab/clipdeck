@@ -34,41 +34,51 @@ export function HypeSparkline({
   }, []);
 
   // Prepare points (minimum 2 points for SVG line)
-  const safePoints = points.length >= 2 ? points : [
-    { time: 1, score: currentScore, mps: 0 },
-    { time: 2, score: currentScore, mps: 0 },
-  ];
+  const numScore = typeof currentScore === "number" && !isNaN(currentScore) ? currentScore : 0;
+  const safePoints =
+    Array.isArray(points) && points.length >= 2
+      ? points
+      : [
+          { time: 1, score: numScore, mps: 0 },
+          { time: 2, score: numScore, mps: 0 },
+        ];
 
   // Scale Y: 0 to 100
   const maxY = 100;
   const paddingY = 4;
-  const usableHeight = height - paddingY * 2;
+  const usableHeight = Math.max(height - paddingY * 2, 10);
+  const safeWidth = Math.max(width || 260, 50);
 
   const getX = (index: number) => {
-    return (index / (safePoints.length - 1)) * width;
+    const denom = Math.max(safePoints.length - 1, 1);
+    const x = (index / denom) * safeWidth;
+    return isNaN(x) ? 0 : Math.round(x * 10) / 10;
   };
 
   const getY = (val: number) => {
-    const clamped = Math.min(Math.max(val, 0), maxY);
-    return height - paddingY - (clamped / maxY) * usableHeight;
+    const num = typeof val === "number" && !isNaN(val) ? val : 0;
+    const clamped = Math.min(Math.max(num, 0), maxY);
+    const y = height - paddingY - (clamped / maxY) * usableHeight;
+    return isNaN(y) ? height / 2 : Math.round(y * 10) / 10;
   };
 
   // Generate path string
   const pathD = safePoints.reduce((acc, point, index) => {
     const x = getX(index);
-    const y = getY(point.score);
+    const y = getY(point?.score ?? 0);
     return index === 0 ? `M ${x} ${y}` : `${acc} L ${x} ${y}`;
   }, "");
 
   // Generate fill area path
-  const areaD = `${pathD} L ${width} ${height} L 0 ${height} Z`;
+  const areaD = `${pathD} L ${safeWidth} ${height} L 0 ${height} Z`;
 
   // Threshold Y coordinate
   const thresholdY = getY(threshold);
 
-  const color = getHypeColor(currentScore);
-  const lastX = getX(safePoints.length - 1);
-  const lastY = getY(safePoints[safePoints.length - 1].score);
+  const color = getHypeColor(numScore);
+  const lastIndex = Math.max(safePoints.length - 1, 0);
+  const lastX = getX(lastIndex);
+  const lastY = getY(safePoints[lastIndex]?.score ?? 0);
 
   return (
     <div ref={containerRef} className="relative w-full overflow-hidden select-none" style={{ height }}>
