@@ -46,14 +46,14 @@ export function useLiveData() {
 
       const updatedStreamers = fetchedStreamers.map((st) => {
         const liveSession = liveSessionMap.get(st.id);
-        const isLive = !!liveSession;
+        const isLive = st.is_live !== undefined ? st.is_live : !!liveSession;
         return {
           ...st,
           is_live: isLive,
-          viewer_count: liveSession?.viewer_count ?? (isLive ? 1200 : 0),
-          current_hype: isLive ? 35 : 0,
-          current_mps: isLive ? 4.5 : 0,
-          active_session_id: liveSession?.id,
+          viewer_count: st.viewer_count ?? liveSession?.viewer_count ?? (isLive ? 1200 : 0),
+          current_hype: isLive ? (st.current_hype ?? 35) : 0,
+          current_mps: isLive ? (st.current_mps ?? 4.5) : 0,
+          active_session_id: st.active_session_id ?? liveSession?.id,
         };
       });
 
@@ -87,6 +87,10 @@ export function useLiveData() {
 
   React.useEffect(() => {
     loadInitialData();
+    const interval = setInterval(() => {
+      loadInitialData();
+    }, 30000);
+    return () => clearInterval(interval);
   }, [loadInitialData]);
 
   // Subscribe to real-time SSE events

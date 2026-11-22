@@ -42,12 +42,14 @@ export async function checkLiveStatus(streamer: {
           isLive = html.includes('"isLive":true') || html.includes('"isLiveBroadcast":true');
 
           const viewersMatch =
+            html.match(/"([0-9,]+)\s*(?:watching now|watching|concurrent viewers)"/i) ||
+            html.match(/"text":"([0-9,]+)\s*watching"/i) ||
             html.match(/"viewerCount":\{"runs":\[\{"text":"([0-9,]+)"\}\]/) ||
             html.match(/"concurrentViewers":\{"runs":\[\{"text":"([0-9,]+)"\}\]/) ||
             html.match(/"viewCount":\{"runs":\[\{"text":"([0-9,]+)"\}\]/);
 
           if (viewersMatch && viewersMatch[1]) {
-            viewerCount = parseInt(viewersMatch[1].replace(/,/g, ""), 10) || 1200;
+            viewerCount = parseInt(viewersMatch[1].replace(/,/g, ""), 10) || (isLive ? 1200 : 0);
           } else if (isLive) {
             viewerCount = 1200;
           }
