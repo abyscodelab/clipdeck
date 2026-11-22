@@ -22,67 +22,115 @@ export function DetectorSettings({
 }: DetectorSettingsProps) {
   const { toast } = useToast();
 
-  // Convert settings list to dictionary
+  // Helper to safely extract primitive values
+  const getNum = (dict: Record<string, any>, key: string, fallback: number): number => {
+    const v = dict[key];
+    if (typeof v === "number" && !isNaN(v)) return v;
+    if (typeof v === "string") {
+      const parsed = parseFloat(v);
+      if (!isNaN(parsed)) return parsed;
+    }
+    if (v && typeof v === "object" && "val" in v) {
+      const parsed = parseFloat(v.val);
+      if (!isNaN(parsed)) return parsed;
+    }
+    return fallback;
+  };
+
+  const getStr = (dict: Record<string, any>, key: string, fallback: string): string => {
+    const v = dict[key];
+    if (typeof v === "string") return v;
+    if (v && typeof v === "object" && "val" in v) return String(v.val);
+    if (typeof v === "number" || typeof v === "boolean") return String(v);
+    return fallback;
+  };
+
+  // Convert settings list to dictionary with defensive unwrapping
   const settingsDict = React.useMemo(() => {
     const dict: Record<string, any> = {};
     initialSettings.forEach((s) => {
-      dict[s.key] = s.value;
+      let val = s.value;
+      if (val && typeof val === "object" && "val" in val) {
+        val = val.val;
+      }
+      dict[s.key] = val;
     });
     return dict;
   }, [initialSettings]);
 
   // Detector state
-  const [threshold, setThreshold] = React.useState<number>(
-    settingsDict["detector_threshold"] ?? 65
+  const [threshold, setThreshold] = React.useState<number>(() =>
+    getNum(settingsDict, "detector_threshold", 65)
   );
-  const [cooldown, setCooldown] = React.useState<number>(
-    settingsDict["detector_cooldown_seconds"] ?? 90
+  const [cooldown, setCooldown] = React.useState<number>(() =>
+    getNum(settingsDict, "detector_cooldown_seconds", 90)
   );
-  const [windowSize, setWindowSize] = React.useState<number>(
-    settingsDict["detector_window_seconds"] ?? 30
+  const [windowSize, setWindowSize] = React.useState<number>(() =>
+    getNum(settingsDict, "detector_window_seconds", 30)
   );
 
   // Weights
-  const [weightVelocity, setWeightVelocity] = React.useState<number>(
-    settingsDict["weight_velocity"] ?? 40
+  const [weightVelocity, setWeightVelocity] = React.useState<number>(() =>
+    getNum(settingsDict, "weight_velocity", 40)
   );
-  const [weightEmotes, setWeightEmotes] = React.useState<number>(
-    settingsDict["weight_emotes"] ?? 25
+  const [weightEmotes, setWeightEmotes] = React.useState<number>(() =>
+    getNum(settingsDict, "weight_emotes", 25)
   );
-  const [weightCaps, setWeightCaps] = React.useState<number>(
-    settingsDict["weight_caps"] ?? 15
+  const [weightCaps, setWeightCaps] = React.useState<number>(() =>
+    getNum(settingsDict, "weight_caps", 15)
   );
-  const [weightCopypasta, setWeightCopypasta] = React.useState<number>(
-    settingsDict["weight_copypasta"] ?? 20
+  const [weightCopypasta, setWeightCopypasta] = React.useState<number>(() =>
+    getNum(settingsDict, "weight_copypasta", 20)
   );
 
   // General state
-  const [mediaPath, setMediaPath] = React.useState<string>(
-    settingsDict["media_path"] ?? "/data/media"
+  const [mediaPath, setMediaPath] = React.useState<string>(() =>
+    getStr(settingsDict, "media_path", "/data/media")
   );
-  const [maxStreams, setMaxStreams] = React.useState<number>(
-    settingsDict["max_concurrent_streams"] ?? 4
+  const [maxStreams, setMaxStreams] = React.useState<number>(() =>
+    getNum(settingsDict, "max_concurrent_streams", 4)
   );
-  const [ringBufferMinutes, setRingBufferMinutes] = React.useState<number>(
-    settingsDict["ring_buffer_max_minutes"] ?? 15
+  const [ringBufferMinutes, setRingBufferMinutes] = React.useState<number>(() =>
+    getNum(settingsDict, "ring_buffer_max_minutes", 15)
   );
 
   // Phase 2 AI Model and Budget settings
-  const [scoringModel, setScoringModel] = React.useState<string>(
-    settingsDict["scoring_model"] ?? "claude-3-5-sonnet-20241022"
+  const [scoringModel, setScoringModel] = React.useState<string>(() =>
+    getStr(settingsDict, "scoring_model", "gemini-2.5-flash")
   );
-  const [edlModel, setEdlModel] = React.useState<string>(
-    settingsDict["edl_model"] ?? "claude-3-5-sonnet-20241022"
+  const [edlModel, setEdlModel] = React.useState<string>(() =>
+    getStr(settingsDict, "edl_model", "gemini-2.5-flash")
   );
-  const [titleModel, setTitleModel] = React.useState<string>(
-    settingsDict["title_model"] ?? "gpt-4o"
+  const [titleModel, setTitleModel] = React.useState<string>(() =>
+    getStr(settingsDict, "title_model", "gemini-2.5-flash")
   );
-  const [transcriptionProvider, setTranscriptionProvider] = React.useState<string>(
-    settingsDict["transcription_provider"] ?? "deepgram"
+  const [transcriptionProvider, setTranscriptionProvider] = React.useState<string>(() =>
+    getStr(settingsDict, "transcription_provider", "deepgram")
   );
-  const [dailyBudgetCap, setDailyBudgetCap] = React.useState<number>(
-    settingsDict["daily_budget_cap_usd"] ?? 10.0
+  const [dailyBudgetCap, setDailyBudgetCap] = React.useState<number>(() =>
+    getNum(settingsDict, "daily_budget_cap_usd", 10.0)
   );
+
+  // Synchronize state when initialSettings are loaded or mutated
+  React.useEffect(() => {
+    if (Object.keys(settingsDict).length > 0) {
+      setThreshold(getNum(settingsDict, "detector_threshold", 65));
+      setCooldown(getNum(settingsDict, "detector_cooldown_seconds", 90));
+      setWindowSize(getNum(settingsDict, "detector_window_seconds", 30));
+      setWeightVelocity(getNum(settingsDict, "weight_velocity", 40));
+      setWeightEmotes(getNum(settingsDict, "weight_emotes", 25));
+      setWeightCaps(getNum(settingsDict, "weight_caps", 15));
+      setWeightCopypasta(getNum(settingsDict, "weight_copypasta", 20));
+      setMediaPath(getStr(settingsDict, "media_path", "/data/media"));
+      setMaxStreams(getNum(settingsDict, "max_concurrent_streams", 4));
+      setRingBufferMinutes(getNum(settingsDict, "ring_buffer_max_minutes", 15));
+      setScoringModel(getStr(settingsDict, "scoring_model", "gemini-2.5-flash"));
+      setEdlModel(getStr(settingsDict, "edl_model", "gemini-2.5-flash"));
+      setTitleModel(getStr(settingsDict, "title_model", "gemini-2.5-flash"));
+      setTranscriptionProvider(getStr(settingsDict, "transcription_provider", "deepgram"));
+      setDailyBudgetCap(getNum(settingsDict, "daily_budget_cap_usd", 10.0));
+    }
+  }, [settingsDict]);
 
   const [isSaving, setIsSaving] = React.useState(false);
 
@@ -147,10 +195,18 @@ export function DetectorSettings({
                 value={scoringModel}
                 onChange={(e) => setScoringModel(e.target.value)}
               >
-                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
-                <option value="gpt-4o">GPT-4o (OpenAI)</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Free Tier / Recommended)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
                 <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
+                <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
+                {scoringModel && !["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022", "gpt-4o-mini", "gpt-4o", "meta-llama/llama-3.3-70b-instruct"].includes(scoringModel) && (
+                  <option value={scoringModel}>{scoringModel}</option>
+                )}
               </Select>
             </div>
 
@@ -161,9 +217,17 @@ export function DetectorSettings({
                 value={edlModel}
                 onChange={(e) => setEdlModel(e.target.value)}
               >
-                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
-                <option value="gpt-4o">GPT-4o (OpenAI)</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Free Tier / Recommended)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
                 <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
+                <option value="gpt-4o">GPT-4o (OpenAI)</option>
+                {edlModel && !["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022", "gpt-4o-mini", "gpt-4o"].includes(edlModel) && (
+                  <option value={edlModel}>{edlModel}</option>
+                )}
               </Select>
             </div>
 
@@ -174,9 +238,17 @@ export function DetectorSettings({
                 value={titleModel}
                 onChange={(e) => setTitleModel(e.target.value)}
               >
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Free Tier / Recommended)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (OpenAI)</option>
                 <option value="gpt-4o">GPT-4o (OpenAI)</option>
                 <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
-                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                {titleModel && !["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gpt-4o-mini", "gpt-4o", "claude-3-5-sonnet-20241022", "claude-3-5-haiku-20241022"].includes(titleModel) && (
+                  <option value={titleModel}>{titleModel}</option>
+                )}
               </Select>
             </div>
           </div>

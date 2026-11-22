@@ -1,6 +1,16 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/server-supabase";
 
+function unwrapSettings(rows: any[] | null) {
+  return (rows || []).map((row) => ({
+    ...row,
+    value:
+      row.value && typeof row.value === "object" && "val" in row.value
+        ? row.value.val
+        : row.value,
+  }));
+}
+
 export async function GET() {
   try {
     const supabase = getSupabaseAdmin();
@@ -8,7 +18,7 @@ export async function GET() {
     if (error) {
       return NextResponse.json({ detail: error.message }, { status: 500 });
     }
-    return NextResponse.json(data || []);
+    return NextResponse.json(unwrapSettings(data));
   } catch (err: any) {
     return NextResponse.json({ detail: err.message }, { status: 500 });
   }
@@ -22,7 +32,7 @@ export async function PUT(request: Request) {
 
     const updates = Object.entries(settingsObj).map(([key, val]) => ({
       key,
-      value: typeof val === "object" ? val : { val },
+      value: val,
       updated_at: new Date().toISOString(),
     }));
 
@@ -31,7 +41,7 @@ export async function PUT(request: Request) {
     }
 
     const { data } = await supabase.from("settings").select("*");
-    return NextResponse.json(data || []);
+    return NextResponse.json(unwrapSettings(data));
   } catch (err: any) {
     return NextResponse.json({ detail: err.message }, { status: 500 });
   }
