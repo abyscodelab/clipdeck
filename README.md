@@ -1,3 +1,13 @@
+---
+title: ClipDeck Worker
+emoji: 🎬
+colorFrom: red
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # ClipDeck 🎬⚡
 
 > **Self-hosted, real-time live-stream hype detection & AI clipping engine.**  
