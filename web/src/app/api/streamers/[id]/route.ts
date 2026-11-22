@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/server-supabase";
+import { checkLiveStatus } from "@/lib/live-checker";
 
 export async function GET(
   _request: Request,
@@ -17,7 +18,15 @@ export async function GET(
     if (error || !data) {
       return NextResponse.json({ detail: "Streamer not found" }, { status: 404 });
     }
-    return NextResponse.json(data);
+
+    const liveInfo = await checkLiveStatus(data);
+
+    return NextResponse.json({
+      ...data,
+      is_live: liveInfo.is_live,
+      viewer_count: liveInfo.viewer_count,
+      active_session_id: liveInfo.active_session_id,
+    });
   } catch (err: any) {
     return NextResponse.json({ detail: err.message }, { status: 500 });
   }

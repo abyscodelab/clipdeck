@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/server-supabase";
+import { checkLiveStatus } from "@/lib/live-checker";
 
 export async function GET() {
   try {
@@ -14,7 +15,19 @@ export async function GET() {
       return NextResponse.json({ detail: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(streamers || []);
+    const enriched = await Promise.all(
+      (streamers || []).map(async (st) => {
+        const liveInfo = await checkLiveStatus(st);
+        return {
+          ...st,
+          is_live: liveInfo.is_live,
+          viewer_count: liveInfo.viewer_count,
+          active_session_id: liveInfo.active_session_id,
+        };
+      })
+    );
+
+    return NextResponse.json(enriched);
   } catch (err: any) {
     return NextResponse.json({ detail: err.message }, { status: 500 });
   }
