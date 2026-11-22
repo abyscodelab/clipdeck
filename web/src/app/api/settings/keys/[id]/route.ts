@@ -13,7 +13,7 @@ export async function PUT(
     const { data, error } = await supabase
       .from("provider_keys")
       .update({
-        key_value_encrypted: body.value || "",
+        encrypted_value: body.value || "",
         updated_at: new Date().toISOString(),
       })
       .eq("id", parseInt(id, 10))
@@ -23,7 +23,15 @@ export async function PUT(
     if (error) {
       return NextResponse.json({ detail: error.message }, { status: 400 });
     }
-    return NextResponse.json(data);
+
+    const val = body.value || "";
+    const masked_value =
+      val.length > 4 ? `••••••••${val.slice(-4)}` : "••••••••";
+
+    return NextResponse.json({
+      ...data,
+      masked_value,
+    });
   } catch (err: any) {
     return NextResponse.json({ detail: err.message }, { status: 500 });
   }
