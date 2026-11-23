@@ -101,16 +101,31 @@ def upload_to_storage(file_path: Path, bucket: str, destination_name: str, conte
 
 def resolve_stream_urls(target_url: str) -> list[str]:
     """Resolve live stream or video URLs using yt-dlp."""
+    # First attempt: default best stream
     cmd = [
         "yt-dlp",
         "-g",
-        "-f",
-        "18/230+234/best[ext=mp4]/best",
         "--no-warnings",
         target_url,
     ]
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        lines = [line.strip() for line in proc.stdout.strip().splitlines() if line.strip()]
+        if lines:
+            return lines
+    except Exception as e:
+        logger.warning("Default yt-dlp resolution failed, trying fallback: %s", e)
+
+    # Fallback attempt with generic best format
+    fallback_cmd = [
+        "yt-dlp",
+        "-g",
+        "-f", "best",
+        "--no-warnings",
+        target_url,
+    ]
+    try:
+        proc = subprocess.run(fallback_cmd, capture_output=True, text=True, check=True)
         lines = [line.strip() for line in proc.stdout.strip().splitlines() if line.strip()]
         if not lines:
             raise ValueError(f"No stream URLs resolved for {target_url}")
