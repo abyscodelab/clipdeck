@@ -32,6 +32,16 @@ export async function POST(
       return NextResponse.json({ detail: momentErr.message }, { status: 500 });
     }
 
+    // Also register in clips table with rendering status
+    await supabase.from("clips").insert({
+      moment_id: moment.id,
+      streamer_id: streamerId,
+      title: `Manual Highlight (${duration}s)`,
+      status: "rendering",
+      duration: duration,
+      aspect_ratio: "9:16",
+    });
+
     return NextResponse.json({
       message: "Clip triggered successfully",
       job_id: moment.id,

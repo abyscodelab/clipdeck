@@ -27,9 +27,11 @@ export async function POST(
         moment_id: momentId,
         streamer_id: moment.streamer_id,
         title: `AI Highlight #${momentId}`,
-        status: "rendered",
+        status: moment.file_path ? "rendered" : "rendering",
         duration: moment.clip_duration || 58.0,
         aspect_ratio: "9:16",
+        file_path: moment.file_path || null,
+        thumbnail_path: moment.thumbnail_path || null,
       })
       .select()
       .single();

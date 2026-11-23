@@ -26,11 +26,17 @@ python -m worker.main &
 WORKER_PID=$!
 echo "[✓] Worker daemon running with PID: $WORKER_PID"
 
+echo "[+] Starting Supabase Continuous Clipping Engine daemon..."
+python -m worker.supabase_clipper --poll &
+CLIPPER_PID=$!
+echo "[✓] Supabase Clipper daemon running with PID: $CLIPPER_PID"
+
 # Graceful shutdown handler
 shutdown_handler() {
     echo "Shutting down ClipDeck..."
-    kill -TERM "$WORKER_PID" 2>/dev/null || true
+    kill -TERM "$WORKER_PID" "$CLIPPER_PID" 2>/dev/null || true
     wait "$WORKER_PID" 2>/dev/null || true
+    wait "$CLIPPER_PID" 2>/dev/null || true
     redis-cli -p 6379 shutdown 2>/dev/null || true
     exit 0
 }

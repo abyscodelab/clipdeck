@@ -8,3 +8,4 @@ dist/
 .netlify/
 .env*
 !.env.example
+.vercel
